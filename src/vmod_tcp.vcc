@@ -1,2 +1,2 @@
-$Module example 3 Example VMOD
+$Module tcp 3 Example VMOD
 $Function STRING hello(STRING)

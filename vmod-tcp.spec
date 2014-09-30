@@ -1,10 +1,10 @@
 Summary: Example VMOD for Varnish
-Name: vmod-varnish-%{VARNISHVER}-example
+Name: vmod-varnish-%{VARNISHVER}-tcp
 Version: 0.1
 Release: 1%{?dist}
 License: BSD
 Group: System Environment/Daemons
-Source0: libvmod-example.tar.gz
+Source0: libvmod-tcp.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: varnish > 4.0
 BuildRequires: make
@@ -15,7 +15,7 @@ BuildRequires: varnish-libs-devel
 Example VMOD
 
 %prep
-%setup -n libvmod-example
+%setup -n libvmod-tcp
 
 %build
 # this assumes that VARNISHSRC is defined on the rpmbuild command line, like this:
