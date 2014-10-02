@@ -7,5 +7,9 @@ Write the important parts of TCP_INFO into varnishlog.
 
 $Function INT congestion_strategy(STRING)
 
-Set client-side socket TCP congestion strategy to this string.
+Set client-side socket TCP congestion control strategy to STRING.
+
+Available values on Linux systems can be found in the
+net.ipv4.tcp_available_congestion_control sysctl setting.
+
 Common values: cubic reno
