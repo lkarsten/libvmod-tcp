@@ -1,2 +1,6 @@
-$Module tcp 3 Example VMOD
-$Function STRING hello(STRING)
+$Module tcp 3 TCP vmod.
+This is a VMOD that allows you to get and set a few TCP socket operations.
+
+$Function VOID dump_info()
+
+Write the important parts of TCP_INFO into varnishlog.

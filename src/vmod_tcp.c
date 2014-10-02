@@ -6,28 +6,35 @@
 
 #include "vcc_if.h"
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+
 int
 init_function(struct vmod_priv *priv, const struct VCL_conf *conf)
 {
 	return (0);
 }
 
-VCL_STRING
-vmod_hello(const struct vrt_ctx *ctx, VCL_STRING name)
-{
-	char *p;
-	unsigned u, v;
+void vmod_dump_info(const struct vrt_ctx *ctx) {
+	char * foo;
+	int retval;
 
-	u = WS_Reserve(ctx->ws, 0); /* Reserve some work space */
-	p = ctx->ws->f;		/* Front of workspace area */
-	v = snprintf(p, u, "Hello, %s", name);
-	v++;
-	if (v > u) {
-		/* No space, reset and leave */
-		WS_Release(ctx->ws, 0);
-		return (NULL);
+	struct tcp_info tcpinfo;
+	int tcp_info_length = sizeof(struct tcp_info);
+	retval = getsockopt(ctx->req->sp->fd, SOL_TCP, TCP_INFO, (void*)&tcpinfo, &tcp_info_length);
+	if (retval != 0) {
+		VSL(SLT_VCL_Error, 0, "getsockopt() == %i", retval);
+		return;
 	}
-	/* Update work space with what we've used */
-	WS_Release(ctx->ws, v);
-	return (p);
+	VSL(SLT_VCL_Log, 0, "tcpi_rto: %i", tcpinfo.tcpi_rto);
+	VSL(SLT_VCL_Log, 0, "tcpi_ato: %i", tcpinfo.tcpi_ato);
+	VSL(SLT_VCL_Log, 0, "tcpi_snd_mss: %i", tcpinfo.tcpi_snd_mss);
+	VSL(SLT_VCL_Log, 0, "tcpi_rcv_mss: %i", tcpinfo.tcpi_rcv_mss);
+
+	VSL(SLT_VCL_Log, 0, "tcpi_rtt: %i", tcpinfo.tcpi_rtt);
+	VSL(SLT_VCL_Log, 0, "tcpi_rttvar: %i", tcpinfo.tcpi_rttvar);
+	VSL(SLT_VCL_Log, 0, "tcpi_advmss: %i", tcpinfo.tcpi_advmss);
+	VSL(SLT_VCL_Log, 0, "tcpi_pmtu: %i", tcpinfo.tcpi_pmtu);
+
 }
