@@ -27,15 +27,11 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 		VSLb(ctx->vsl, SLT_VCL_Error, "getsockopt() == %i", retval);
 		return;
 	}
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_rto: %i", tcpinfo.tcpi_rto);
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_ato: %i", tcpinfo.tcpi_ato);
+	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi rto=%i ato=%i snd_mss=%i rcv_mss=%i",
+	    tcpinfo.tcpi_rto, tcpinfo.tcpi_ato, tcpinfo.tcpi_snd_mss,
+	    tcpinfo.tcpi_rcv_mss);
 
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_snd_mss: %i", tcpinfo.tcpi_snd_mss);
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_rcv_mss: %i", tcpinfo.tcpi_rcv_mss);
-
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_rtt: %i", tcpinfo.tcpi_rtt);
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_rttvar: %i", tcpinfo.tcpi_rttvar);
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_advmss: %i", tcpinfo.tcpi_advmss);
-	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi_pmtu: %i", tcpinfo.tcpi_pmtu);
-
+	VSLb(ctx->vsl, SLT_VCL_Log, "tcpi rtt=%i rttvar=%i advmss=%i pmtu=%i",
+	    tcpinfo.tcpi_rtt, tcpinfo.tcpi_rttvar, tcpinfo.tcpi_advmss,
+	    tcpinfo.tcpi_pmtu);
 }
