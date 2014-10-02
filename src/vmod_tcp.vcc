@@ -4,3 +4,8 @@ This is a VMOD that allows you to get and set a few TCP socket operations.
 $Function VOID dump_info()
 
 Write the important parts of TCP_INFO into varnishlog.
+
+$Function INT congestion_strategy(STRING)
+
+Set client-side socket TCP congestion strategy to this string.
+Common values: cubic reno
