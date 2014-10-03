@@ -1,0 +1,23 @@
+varnishtest "Test tcp vmod"
+
+server s1 {
+       rxreq
+       txresp
+} -start
+
+varnish v1 -vcl+backend {
+	import tcp from "${vmod_topbuild}/src/.libs/libvmod_tcp.so";
+
+	sub vcl_deliver {
+		set resp.http.a = tcp.get_estimated_rtt();
+	}
+} -start
+
+client c1 {
+	txreq -url "/"
+	rxresp
+	# Probably terribly brittle.
+	expect resp.http.a == "4.000"
+}
+
+client c1 -run
