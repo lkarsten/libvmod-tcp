@@ -26,7 +26,7 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 	int retval;
 
 	struct tcp_info tcpinfo;
-	int tcp_info_length = sizeof(struct tcp_info);
+	socklen_t tcp_info_length = sizeof(struct tcp_info);
 	retval = getsockopt(ctx->req->sp->fd, SOL_TCP, TCP_INFO,
 	    (void*)&tcpinfo,&tcp_info_length);
 	if (retval != 0) {
@@ -51,10 +51,8 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 
 VCL_INT vmod_congestion_algorithm(const struct vrt_ctx *ctx, VCL_STRING new) {
 	char strategy[TCP_CA_NAME_MAX];
-	int l;
-
 	strncpy(strategy, new, (TCP_CA_NAME_MAX - 1));
-	l = strlen(strategy);
+	socklen_t l = strlen(strategy);
 	if (setsockopt(ctx->req->sp->fd, IPPROTO_TCP, TCP_CONGESTION, strategy, l) < 0) {
 		VSLb(ctx->vsl, SLT_VCL_Error,
 		    "TCP_CONGESTION setsockopt() for \"%s\" failed.", strategy);
