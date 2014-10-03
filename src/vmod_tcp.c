@@ -50,14 +50,14 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 // http://sgros.blogspot.com/2012/12/controlling-which-congestion-control.html
 // https://fasterdata.es.net/host-tuning/linux/
 
-VCL_INT vmod_congestion_strategy(const struct vrt_ctx *ctx, VCL_STRING new) {
-	int l;
+VCL_INT vmod_congestion_algorithm(const struct vrt_ctx *ctx, VCL_STRING new) {
 	char strategy[TCP_CA_NAME_MAX];
+	int l;
 
 	strncpy(strategy, new, (TCP_CA_NAME_MAX - 1));
 	l = strlen(strategy);
 	if (setsockopt(ctx->req->sp->fd, IPPROTO_TCP, TCP_CONGESTION, strategy, l) < 0) {
-		VSLb(ctx->vsl, SLT_VCL_Error, 
+		VSLb(ctx->vsl, SLT_VCL_Error,
 		    "TCP_CONGESTION setsockopt() for \"%s\" failed.", strategy);
 		return(-1);
 	}
@@ -73,3 +73,10 @@ VCL_INT vmod_congestion_strategy(const struct vrt_ctx *ctx, VCL_STRING new) {
 #endif
 	return(0);
 }
+
+/*
+ * net.ipv4.tcp_allowed_congestion_control = cubic reno
+ * net.ipv4.tcp_available_congestion_control = cubic reno
+ * net.ipv4.tcp_congestion_control = cubic
+ *
+ * */

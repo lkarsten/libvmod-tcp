@@ -5,7 +5,7 @@ $Function VOID dump_info()
 
 Write the important parts of TCP_INFO into varnishlog.
 
-$Function INT congestion_strategy(STRING)
+$Function INT congestion_algorithm(STRING)
 
-Set client-side socket TCP congestion strategy to this string.
+Set client socket TCP congestion control algorithm to this string.
 Common values: cubic reno
