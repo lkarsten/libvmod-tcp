@@ -1,13 +1,13 @@
-============
+========
 vmod_tcp
-============
+========
 
-----------------------
-Varnish Example Module
-----------------------
+------------------
+Varnish TCP module
+------------------
 
-:Author: Martin Blix Grydeland
-:Date: 2011-05-26
+:Author: Lasse Karstensen
+:Date: 2014-10-03
 :Version: 1.0
 :Manual section: 3
 
@@ -19,37 +19,54 @@ import tcp;
 DESCRIPTION
 ===========
 
-Example Varnish vmod demonstrating how to write an out-of-tree Varnish vmod
-for Varnish 3.0 and later.
+The TCP vmod is a set of functions that accesses and changes attributes
+on the (client) TCP connection.
 
-Implements the traditional Hello World as a vmod.
+It allows you to access TCP_INFO data, and also change the congestion control
+algorithm used.
+
+The VMOD is Linux-specific and requires a recent kernel to be useful. (>=3.13)
+
+The interface/functions provided by this vmod are not stable, expect changes.
 
 FUNCTIONS
 =========
 
-hello
------
+dump_info
+---------
 
 Prototype
         ::
 
-                hello(STRING S)
+                dump_info()
 Return value
-	STRING
+	VOID
 Description
-	Returns "Hello, " prepended to S
+	Write the contents of the TCP_INFO data structure into varnishlog.
 Example
         ::
 
-                set resp.http.hello = tcp.hello("World");
+                tcp.dump_info();
+
+congestion_algorithm
+--------------------
+
+Prototype
+        ::
+
+                congestion_algorithm(STRING S)
+Return value
+	INT
+Description
+	Set the client socket congestion control algorithm to S. Returns 0 on
+    success, and -1 on error.
+Example
+        ::
+
+                set req.http.x-tcp = tcp.congestion_algorithm("cubic");
 
 INSTALLATION
 ============
-
-This is an tcp skeleton for developing out-of-tree Varnish
-vmods available from the 3.0 release. It implements the "Hello, World!" 
-as a vmod callback. Not particularly useful in good hello world 
-tradition,but demonstrates how to get the glue around a vmod working.
 
 The source tree is based on autotools to configure the building, and
 does also have the necessary bits in place to do functional unit tests
@@ -57,38 +74,29 @@ using the varnishtest tool.
 
 Usage::
 
- ./configure VARNISHSRC=DIR [VMODDIR=DIR]
-
-`VARNISHSRC` is the directory of the Varnish source tree for which to
-compile your vmod. Both the `VARNISHSRC` and `VARNISHSRC/include`
-will be added to the include search paths for your module.
-
-Optionally you can also set the vmod install directory by adding
-`VMODDIR=DIR` (defaults to the pkg-config discovered directory from your
-Varnish installation).
+ ./configure
 
 Make targets:
 
 * make - builds the vmod
-* make install - installs your vmod in `VMODDIR`
+* make install - installs vmod
 * make check - runs the unit tests in ``src/tests/*.vtc``
 
 In your VCL you could then use this vmod along the following lines::
         
         import tcp;
 
-        sub vcl_deliver {
-                # This sets resp.http.hello to "Hello, World"
-                set resp.http.hello = tcp.hello("World");
+        sub vcl_recv {
+                tcp.dump_info();
+                set req.http.x-tcp = tcp.congestion_algorithm("reno");
         }
 
-HISTORY
-=======
+Example varnishlog output from dump_info()::
+        
+        -   VCL_Log        tcpi: snd_mss=1448 rcv_mss=536 lost=0 retrans=0
+        -   VCL_Log        tcpi2: pmtu=1500 rtt=152000 rttvar=76000 snd_cwnd=10 advmss=1448 reordering=3
+        -   VCL_Log        getsockopt() returned: cubic
 
-This manual page was released as part of the libvmod-tcp package,
-demonstrating how to create an out-of-tree Varnish vmod. For further
-tcps and inspiration check the vmod directory:
- https://www.varnish-cache.org/vmods
 
 COPYRIGHT
 =========
