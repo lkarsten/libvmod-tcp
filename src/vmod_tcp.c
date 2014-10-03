@@ -20,6 +20,14 @@
 void vmod_dump_info(const struct vrt_ctx *ctx) {
 	int retval;
 
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	if (ctx->req == NULL) {
+	    return;
+	}
+	CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
+	CHECK_OBJ_NOTNULL(ctx->req->sp, SESS_MAGIC);
+	AN(ctx->req->sp->fd);
+
 	struct tcp_info tcpinfo;
 	socklen_t tcp_info_length = sizeof(struct tcp_info);
 	retval = getsockopt(ctx->req->sp->fd, SOL_TCP, TCP_INFO,
@@ -45,8 +53,18 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 // https://fasterdata.es.net/host-tuning/linux/
 
 VCL_INT vmod_congestion_algorithm(const struct vrt_ctx *ctx, VCL_STRING new) {
-	char strategy[TCP_CA_NAME_MAX];
-	strncpy(strategy, new, (TCP_CA_NAME_MAX - 1));
+	char strategy[TCP_CA_NAME_MAX + 1];
+
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	if (ctx->req == NULL) {
+	    return(-1);
+	}
+	CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
+	CHECK_OBJ_NOTNULL(ctx->req->sp, SESS_MAGIC);
+	AN(ctx->req->sp->fd);
+
+	strncpy(strategy, new, TCP_CA_NAME_MAX);
+	strategy[TCP_CA_NAME_MAX] = '\0';
 	socklen_t l = strlen(strategy);
 	if (setsockopt(ctx->req->sp->fd, IPPROTO_TCP, TCP_CONGESTION, strategy, l) < 0) {
 		VSLb(ctx->vsl, SLT_VCL_Error,
