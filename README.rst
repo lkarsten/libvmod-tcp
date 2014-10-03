@@ -58,12 +58,12 @@ Prototype
 Return value
 	INT
 Description
-	Set the client socket congestion control algorithm to S. Returns 0 on
-    success, and -1 on error.
+	Set the client socket congestion control algorithm to S. Returns 0 on success, and -1 on error.
 Example
         ::
 
                 set req.http.x-tcp = tcp.congestion_algorithm("cubic");
+
 
 INSTALLATION
 ============
