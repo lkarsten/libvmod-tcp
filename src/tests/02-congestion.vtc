@@ -9,9 +9,9 @@ varnish v1 -vcl+backend {
 	import tcp from "${vmod_topbuild}/src/.libs/libvmod_tcp.so";
 
 	sub vcl_deliver {
-		set resp.http.a = tcp.congestion_strategy("reno");
-		set resp.http.b = tcp.congestion_strategy("slartibartfast");
-		set resp.http.c = tcp.congestion_strategy("cubic");
+		set resp.http.a = tcp.congestion_algorithm("reno");
+		set resp.http.b = tcp.congestion_algorithm("slartibartfast");
+		set resp.http.c = tcp.congestion_algorithm("cubic");
 	}
 } -start
 
