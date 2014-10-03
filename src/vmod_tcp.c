@@ -13,11 +13,6 @@
 
 #define TCP_CA_NAME_MAX 16
 
-int
-init_function(struct vmod_priv *priv, const struct VCL_conf *conf) {
-	return (0);
-}
-
 /*
  * Based on the information found here:
  *   http://linuxgazette.net/136/pfeiffer.html
