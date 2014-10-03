@@ -9,3 +9,7 @@ $Function INT congestion_algorithm(STRING)
 
 Set client socket TCP congestion control algorithm to this string.
 Common values: cubic reno
+
+$Function REAL get_estimated_rtt()
+
+Return the estimated Round-Trip Time. (RTT).

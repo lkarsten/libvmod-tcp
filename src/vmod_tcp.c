@@ -18,8 +18,6 @@
  *   http://linuxgazette.net/136/pfeiffer.html
 */
 void vmod_dump_info(const struct vrt_ctx *ctx) {
-	int retval;
-
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	if (ctx->req == NULL) {
 	    return;
@@ -29,11 +27,10 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 	AN(ctx->req->sp->fd);
 
 	struct tcp_info tcpinfo;
-	socklen_t tcp_info_length = sizeof(struct tcp_info);
-	retval = getsockopt(ctx->req->sp->fd, SOL_TCP, TCP_INFO,
-	    (void*)&tcpinfo,&tcp_info_length);
-	if (retval != 0) {
-		VSLb(ctx->vsl, SLT_VCL_Error, "getsockopt() == %i", retval);
+	socklen_t tlen = sizeof(struct tcp_info);
+	if (getsockopt(ctx->req->sp->fd, SOL_TCP, TCP_INFO,
+	    (void*)&tcpinfo, &tlen) < 0) {
+		VSLb(ctx->vsl, SLT_VCL_Error, "getsockopt() failed");
 		return;
 	}
 
@@ -48,6 +45,32 @@ void vmod_dump_info(const struct vrt_ctx *ctx) {
 	    tcpinfo.tcpi_snd_cwnd, tcpinfo.tcpi_advmss, tcpinfo.tcpi_reordering);
 
 }
+
+/* TODO: Use a vmod object for these getters. */
+VCL_REAL vmod_get_estimated_rtt(const struct vrt_ctx *ctx) {
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	if (ctx->req == NULL) {
+	    return(0.0);
+	}
+	CHECK_OBJ_NOTNULL(ctx->req, REQ_MAGIC);
+	CHECK_OBJ_NOTNULL(ctx->req->sp, SESS_MAGIC);
+	AN(ctx->req->sp->fd);
+
+	struct tcp_info tcpinfo;
+	socklen_t tlen = sizeof(struct tcp_info);
+	if (getsockopt(ctx->req->sp->fd, SOL_TCP, TCP_INFO,
+	    (void*)&tcpinfo, &tlen) < 0) {
+		VSLb(ctx->vsl, SLT_VCL_Error, "getsockopt() failed");
+		return(0.0);
+	}
+	/*
+	 * This should really take into account the rtt variance as well,
+	 * but I haven't got a clear view of how that would best be done within
+	 * the VCL constraints.
+	*/
+	return (tcpinfo.tcpi_rtt / 1000);
+}
+
 
 // http://sgros.blogspot.com/2012/12/controlling-which-congestion-control.html
 // https://fasterdata.es.net/host-tuning/linux/
