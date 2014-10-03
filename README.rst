@@ -64,6 +64,24 @@ Example
 
                 set req.http.x-tcp = tcp.congestion_algorithm("cubic");
 
+get_estimated_rtt
+-----------------
+
+Prototype
+        ::
+
+                get_estimated_rtt()
+Return value
+	REAL
+Description
+	Get the estimated round-trip-time for the client socket. Unit: milliseconds.
+Example
+        ::
+
+                if (tcp.get_estimated_rtt() > 300) {
+                    std.log("client is far away.");
+                }
+
 
 INSTALLATION
 ============
@@ -88,7 +106,9 @@ In your VCL you could then use this vmod along the following lines::
 
         sub vcl_recv {
                 tcp.dump_info();
-                set req.http.x-tcp = tcp.congestion_algorithm("reno");
+                if (tcp.get_estimated_rtt() > 300) {
+                    set req.http.x-tcp = tcp.congestion_algorithm("hybla");
+                }
         }
 
 Example varnishlog output from dump_info()::
