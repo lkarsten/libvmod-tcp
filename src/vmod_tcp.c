@@ -23,7 +23,6 @@ init_function(struct vmod_priv *priv, const struct VCL_conf *conf) {
  *   http://linuxgazette.net/136/pfeiffer.html
 */
 void vmod_dump_info(const struct vrt_ctx *ctx) {
-	char * foo;
 	int retval;
 
 	struct tcp_info tcpinfo;
