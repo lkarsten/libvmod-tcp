@@ -7,8 +7,8 @@ Varnish TCP module
 ------------------
 
 :Author: Lasse Karstensen
-:Date: 2014-10-03
-:Version: 1.0
+:Date: 2015-11-30
+:Version: 0.8
 :Manual section: 3
 
 SYNOPSIS
@@ -24,6 +24,8 @@ on the (client) TCP connection.
 
 It allows you to access TCP_INFO data, and also change the congestion control
 algorithm used.
+
+This VMOD works with Varnish Cache 4.0 and similar.
 
 The VMOD is Linux-specific and requires a recent kernel to be useful. (>=3.13)
 
@@ -118,10 +120,3 @@ Example varnishlog output from dump_info()::
         -   VCL_Log        getsockopt() returned: cubic
 
 
-COPYRIGHT
-=========
-
-This document is licensed under the same license as the
-libvmod-tcp project. See LICENSE for details.
-
-* Copyright (c) 2011-2014 Varnish Software
