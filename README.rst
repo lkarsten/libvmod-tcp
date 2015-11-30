@@ -34,6 +34,23 @@ The interface/functions provided by this vmod are not stable, expect changes.
 FUNCTIONS
 =========
 
+set_socket_pace
+---------------
+
+Prototype
+        ::
+
+                set_socket_pace(INT PACE)
+Return value
+	VOID
+Description
+    Set socket pacing on client-side TCP connection to PACE KB/s. Network
+    interface used must be using a supported scheduler. (fq)
+Example
+        ::
+
+                tcp.set_socket_pace(1000);
+
 dump_info
 ---------
 

@@ -1,6 +1,11 @@
 $Module tcp 3 TCP vmod.
 This is a VMOD that allows you to get and set a few TCP socket operations.
 
+$Function VOID set_socket_pace(INT)
+
+Set socket pacing on client-side TCP connection to PACE KB/s. Network
+interface used must be using a supported scheduler. (fq)
+
 $Function VOID dump_info()
 
 Write the important parts of TCP_INFO into varnishlog.

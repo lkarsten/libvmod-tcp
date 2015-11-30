@@ -113,3 +113,30 @@ VCL_INT vmod_congestion_algorithm(const struct vrt_ctx *ctx, VCL_STRING new) {
  * net.ipv4.tcp_congestion_control = cubic
  *
  * */
+
+VCL_VOID __match_proto__(td_std_set_socket_pace)
+vmod_set_socket_pace(const struct vrt_ctx *ctx, const long rate)
+{
+#ifndef SO_MAX_PACING_RATE
+#define SO_MAX_PACING_RATE 47
+#endif
+
+        int pacerate = rate * 1024;
+        CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+
+        if (setsockopt(ctx->req->sp->fd, SOL_SOCKET, SO_MAX_PACING_RATE, &pacerate,
+            sizeof(pacerate)) != 0)
+                VSLb(ctx->vsl, SLT_VCL_Error, "set_socket_pace(): Error setting pace rate.");
+	else
+                VSLb(ctx->vsl, SLT_VCL_Log, "vmod-tcp: Socket paced to %lu KB/s.", rate);
+
+#ifndef NDEBUG
+        int retval;
+        unsigned int current_rate = 0;
+        socklen_t f = sizeof(current_rate);
+        retval = getsockopt(ctx->req->sp->fd, SOL_SOCKET, SO_MAX_PACING_RATE,
+                &current_rate, &f);
+        VSLb(ctx->vsl, SLT_VCL_Log, "getsockopt() %i %i", retval, current_rate);
+#endif
+
+}
